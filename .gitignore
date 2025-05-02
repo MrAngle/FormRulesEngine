@@ -35,12 +35,11 @@ out/
 
 ### VS Code ###
 .vscode/
-
 .settings/
 *.launch
 *.launch.xml
 
 # Libraries
 libs/
-lib/
+lib/*
 *.jar
