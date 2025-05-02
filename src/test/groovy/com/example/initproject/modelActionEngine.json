@@ -1,0 +1,53 @@
+{
+  "formName": "jakiformularz",
+  "metadata": {
+    "isGusWorking": true
+  },
+  "fields": {
+    "ownerName": {
+      "id": "ownerName",
+      "controlName": "owner.name",
+      "type": "multiple",
+      "validator": "jakiśregex",
+      "possibleOptions": [
+        {
+          "label": "wartosc",
+          "value": "001"
+        }
+      ]
+    }
+  },
+  "rules": [
+    {
+      "when": {
+        "source": "metadata",
+        "field": "isGusWorking",
+        "operator": "EQUAL",
+        "value": true
+      },
+      "action": {
+        "field": "ownerName",
+        "property": "visible",
+        "value": true
+      }
+    },
+    {
+      "when": {
+        "logic": "AND",
+        "conditions": [
+          {
+            "source": "field",
+            "field": "gender",
+            "operator": "EQUAL",
+            "value": "male"
+          }
+        ]
+      },
+      "action": {
+        "field": "specialField",
+        "property": "visible",
+        "value": false
+      }
+    }
+  ]
+}
