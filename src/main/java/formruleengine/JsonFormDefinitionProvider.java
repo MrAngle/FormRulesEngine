@@ -8,14 +8,14 @@ import java.io.IOException;
 
 @Service
 public class JsonFormDefinitionProvider implements FormDefinitionProvider {
-    private final String filePath =
-            "C:\\Users\\User\\IdeaProjects\\InitProject\\src\\test\\groovy\\com\\example\\initproject\\modelActionEngine.json";
+
+    final static String sourcePath = "C:\\Users\\User\\IdeaProjects\\InitProject\\src\\test\\groovy\\com\\example\\initproject\\";
 
     @Override
-    public FormDefinition getFormDefinition() {
+    public FormDefinition getFormDefinition(String filePath) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(new File(filePath), FormDefinition.class);
+            return mapper.readValue(new File(sourcePath + filePath), FormDefinition.class);
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse JSON file: " + filePath, e);
         }

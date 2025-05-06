@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 class FormDefinitionService {
     private final FormDefinitionProvider formDefinitionProvider;
 
-    public FormDefinition getFormDefinition() {
-        return formDefinitionProvider.getFormDefinition();
+    public FormDefinition getFormDefinition(String filePath) {
+        return formDefinitionProvider.getFormDefinition(filePath);
     }
 }
