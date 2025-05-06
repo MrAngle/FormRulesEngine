@@ -1,0 +1,217 @@
+{
+  "formName": "formularzSzkody",
+  "metadata": {
+    "ufgAvailable": false
+  },
+  "fields": {
+    "owner.hasClaimIn12Months": {
+      "id": "owner.hasClaimIn12Months",
+      "controlName": "owner.hasClaimIn12Months",
+      "type": "checkbox",
+      "label": "Czy miałeś szkodę w ciągu ostatnich 12 miesięcy?"
+    },
+    "owner.hasClaimIn6Months": {
+      "id": "owner.hasClaimIn6Months",
+      "controlName": "owner.hasClaimIn6Months",
+      "type": "checkbox",
+      "label": "Czy miałeś szkodę w ciągu ostatnich 6 miesięcy?",
+      "visible": false
+    },
+    "vehicle.vehicleType": {
+      "id": "vehicle.vehicleType",
+      "controlName": "vehicle.vehicleType",
+      "type": "dropdown",
+      "label": "Typ pojazdu",
+      "options": ["SAMOCHÓD", "MOTOCYKL", "PRZYCZEPA"]
+    },
+    "vehicle.isFromUK": {
+      "id": "vehicle.isFromUK",
+      "controlName": "vehicle.isFromUK",
+      "type": "checkbox",
+      "label": "Czy pojazd pochodzi z Wielkiej Brytanii?"
+    },
+    "vehicle.specialCaseSteering": {
+      "id": "vehicle.specialCaseSteering",
+      "controlName": "vehicle.specialCaseSteering",
+      "type": "checkbox",
+      "label": "Użyj niestandardowego ustawienia kierownicy"
+    },
+    "vehicle.steeringSide": {
+      "id": "vehicle.steeringSide",
+      "controlName": "vehicle.steeringSide",
+      "type": "dropdown",
+      "label": "Po której stronie znajduje się kierownica?",
+      "options": ["LEWA", "PRAWA"],
+      "visible": true
+    }
+  },
+  "rules": [
+    {
+      "action": {
+        "field": "owner.hasClaimIn6Months",
+        "property": "visible",
+        "value": true
+      },
+      "when": {
+        "type": "group",
+        "operator": "AND",
+        "conditions": [
+          {
+            "type": "simple",
+            "source": "field",
+            "key": "owner.hasClaimIn12Months",
+            "operator": "EQUAL",
+            "value": true
+          },
+          {
+            "type": "simple",
+            "source": "predicate",
+            "key": "ufgUnavailable",
+            "operator": "EQUAL",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "visible",
+        "value": false
+      },
+      "when": {
+        "type": "simple",
+        "source": "field",
+        "key": "vehicle.vehicleType",
+        "operator": "IN",
+        "value": ["MOTOCYKL", "PRZYCZEPA"]
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "value",
+        "value": "PRAWA"
+      },
+      "when": {
+        "type": "simple",
+        "source": "field",
+        "key": "vehicle.isFromUK",
+        "operator": "EQUAL",
+        "value": true
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "visible",
+        "value": true
+      },
+      "when": {
+        "type": "group",
+        "operator": "OR",
+        "conditions": [
+          {
+            "type": "simple",
+            "source": "field",
+            "key": "vehicle.vehicleType",
+            "operator": "NOT_IN",
+            "value": ["MOTOCYKL", "PRZYCZEPA"]
+          },
+          {
+            "type": "simple",
+            "source": "field",
+            "key": "vehicle.specialCaseSteering",
+            "operator": "EQUAL",
+            "value": true
+          }
+        ]
+      }
+    }
+  ],
+  "predicates": {
+    "ufgUnavailable": {
+      "type": "metadata",
+      "key": "ufgAvailable",
+      "operator": "EQUAL",
+      "value": false
+    }
+  }
+}
+
+
+{
+  "action": {
+    "field": "vehicle.emissionStandard",
+    "property": "visible",
+    "value": true
+  },
+  "condition": {
+    "kind": "group",
+    "operator": "OR",
+    "conditions": [
+      {
+        "kind": "group",
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "simple",
+            "source": "field",
+            "key": "vehicle.vehicleType",
+            "operator": "EQUAL",
+            "value": "SAMOCHÓD"
+          },
+          {
+            "kind": "simple",
+            "source": "field",
+            "key": "vehicle.productionYear",
+            "operator": "GREATER_THAN",
+            "value": 2005
+          }
+        ]
+      },
+      {
+        "kind": "simple",
+        "source": "field",
+        "key": "vehicle.fuelType",
+        "operator": "EQUAL",
+        "value": "LPG"
+      }
+    ]
+  }
+}
+
+
+
+
+
+{
+  "condition": {
+    "operator": "OR",
+    "conditions": [
+      {
+        "operator": "AND",
+        "conditions": [
+          {
+            "source": "field",
+            "key": "vehicle.vehicleType",
+            "operator": "EQUAL",
+            "value": "SAMOCHÓD"
+          },
+          {
+            "source": "field",
+            "key": "vehicle.productionYear",
+            "operator": "GREATER_THAN",
+            "value": 2005
+          }
+        ]
+      },
+      {
+        "source": "field",
+        "key": "vehicle.fuelType",
+        "operator": "EQUAL",
+        "value": "LPG"
+      }
+    ]
+  }
+}
