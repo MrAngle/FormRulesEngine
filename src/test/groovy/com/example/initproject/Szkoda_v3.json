@@ -1,0 +1,132 @@
+{
+  "formName": "formularzSzkody",
+  "metadata": {
+    "ufgAvailable": false
+  },
+  "fields": {
+    "owner.hasClaimIn12Months": {
+      "label": "Czy miałeś szkodę w ciągu ostatnich 12 miesięcy?"
+    },
+    "owner.hasClaimIn6Months": {
+      "label": "Czy miałeś szkodę w ciągu ostatnich 6 miesięcy?",
+      "visible": false
+    },
+    "vehicle.vehicleType": {
+      "label": "Typ pojazdu",
+      "options": ["SAMOCHÓD", "MOTOCYKL", "PRZYCZEPA"]
+    },
+    "vehicle.isFromUK": {
+      "label": "Czy pojazd pochodzi z Wielkiej Brytanii?"
+    },
+    "vehicle.specialCaseSteering": {
+      "label": "Użyj niestandardowego ustawienia kierownicy"
+    },
+    "vehicle.steeringSide": {
+      "label": "Po której stronie znajduje się kierownica?",
+      "options": ["LEWA", "PRAWA"],
+      "visible": true
+    }
+  },
+  "fieldGroups": [
+    {
+      "id": "owner",
+      "label": "Właściciel",
+      "fields": [
+        "owner.hasClaimIn12Months",
+        "owner.hasClaimIn6Months"
+      ]
+    },
+    {
+      "id": "vehicle",
+      "label": "Pojazd",
+      "fields": [
+        "vehicle.vehicleType",
+        "vehicle.isFromUK",
+        "vehicle.specialCaseSteering",
+        "vehicle.steeringSide"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "action": {
+        "field": "owner.hasClaimIn6Months",
+        "property": "visible",
+        "value": true
+      },
+      "when": {
+        "operator": "AND",
+        "conditions": [
+          {
+            "source": "field",
+            "key": "owner.hasClaimIn12Months",
+            "operator": "EQUAL",
+            "value": true
+          },
+          {
+            "source": "predicate",
+            "key": "ufgUnavailable",
+            "operator": "EQUAL",
+            "value": true
+          },
+          {
+            "source": "predicate",
+            "key": "isNewUser",
+            "operator": "EQUAL",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "visible",
+        "value": false
+      },
+      "when": {
+        "source": "field",
+        "key": "vehicle.vehicleType",
+        "operator": "IN",
+        "value": ["MOTOCYKL", "PRZYCZEPA"]
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "value",
+        "value": "PRAWA"
+      },
+      "when": {
+        "source": "field",
+        "key": "vehicle.isFromUK",
+        "operator": "EQUAL",
+        "value": true
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "visible",
+        "value": true
+      },
+      "when": {
+        "operator": "OR",
+        "conditions": [
+          {
+            "source": "field",
+            "key": "vehicle.vehicleType",
+            "operator": "NOT_IN",
+            "value": ["MOTOCYKL", "PRZYCZEPA"]
+          },
+          {
+            "source": "field",
+            "key": "vehicle.specialCaseSteering",
+            "operator": "EQUAL",
+            "value": true
+          }
+        ]
+      }
+    }
+  ]
+}
