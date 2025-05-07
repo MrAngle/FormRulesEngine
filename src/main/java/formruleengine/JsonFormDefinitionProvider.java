@@ -12,6 +12,16 @@ public class JsonFormDefinitionProvider implements FormDefinitionProvider {
     final static String sourcePath = "C:\\Users\\User\\IdeaProjects\\InitProject\\src\\test\\groovy\\com\\example\\initproject\\";
 
     @Override
+    public FormDefinition_v2 getFormDefinition_v2(String filePath) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(new File(sourcePath + filePath), FormDefinition_v2.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse JSON file: " + filePath, e);
+        }
+    }
+
+    @Override
     public FormDefinition getFormDefinition(String filePath) {
         ObjectMapper mapper = new ObjectMapper();
         try {

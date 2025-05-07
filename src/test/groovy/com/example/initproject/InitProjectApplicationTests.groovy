@@ -51,6 +51,21 @@ class InitProjectApplicationTests extends Specification {
         printJson(definition) == true
     }
 
+
+    def "test engine with child FormDefinition_v2"() {
+        when:
+        def formDefinition = new JsonFormDefinitionProvider()
+        def filePath =
+                "szkoda.json";
+
+        def definition = formDefinition.getFormDefinition_v2(filePath)
+
+        then:
+        definition != null
+        and:
+        printJson(definition) == true
+    }
+
     def printJson(def definition) {
         def mapper = new ObjectMapper()
         def json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(definition)
