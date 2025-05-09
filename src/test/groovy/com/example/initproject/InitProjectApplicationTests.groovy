@@ -1,6 +1,11 @@
 package com.example.initproject
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import formruleengine.FormDef_v3.FormDefinition_v3
+import formruleengine.FormDef_v3.domain.ClaimForm
+import formruleengine.FormDef_v3.predicate.PredicateContext
+import formruleengine.FormDef_v3.predicate.RuleEvaluator
+import formruleengine.FormDef_v3.formgeneratordomain.FormGeneratorDomain
 import formruleengine.FormDefinition
 import formruleengine.JsonFormDefinitionProvider
 import spock.lang.Specification
@@ -77,6 +82,54 @@ class InitProjectApplicationTests extends Specification {
         then:
         definition != null
         and:
+        printJson(definition) == true
+    }
+
+    def "should evaluate rules in form definition"() {
+        given:
+        def formDefinition = new JsonFormDefinitionProvider()
+        def definition = formDefinition.getFormDefinition_v3("Szkoda_v3.json")
+
+        and: "prepare field values and metadata"
+        def fieldValues = [
+                "owner.hasClaimIn12Months": true,
+                "vehicle.vehicleType"     : "SAMOCHÓD",
+                "vehicle.isFromUK"        : false
+        ]
+        def metadata = [
+                "ufgAvailable": false,
+                "userType"    : "NEW"
+        ]
+        def sessionData = [
+                "ufgAvailable": false,
+                "userType"    : "EXISTING"
+        ]
+        def context = new PredicateContext(metadata, fieldValues, sessionData)
+//        def evaluator = new RuleEvaluator()
+
+        when: "rules are evaluated"
+        def results = []
+        for (rule in definition.rules) {
+            if (RuleEvaluator.evaluateCondition(rule.condition, context)) {
+                results << rule.action
+            }
+        }
+
+        List<FormDefinition_v3.Rule> rules = definition.getRules();
+//        PredicateContext context = new PredicateContext(metadataMap, fieldValuesMap);
+
+        List<FormDefinition_v3.Rule> prunedRules = RuleEvaluator.pruneRulesByPredicates(rules, context);
+
+// możesz teraz nadpisać:
+        definition.setRules(prunedRules)
+
+//        ClaimForm claimForm = DomainService.getClaimForm()
+//        def prefillRules = FormGeneratorDomain.generatePrefillRules(claimForm) // <- metoda powyżej
+
+        FormGeneratorDomain.enrichWithPrefillRules(definition)
+
+        then:
+//        results.any { it.field == "owner.hasClaimIn6Months" && it.property == "visible" && it.value == true }
         printJson(definition) == true
     }
 

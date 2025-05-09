@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +21,22 @@ public class FormDefinition_v3 {
     private List<FieldGroup> fieldGroups;
     private List<Rule> rules;
 
+    public void addRule(Rule rule) {
+        if (rules == null) {
+            rules = new ArrayList<>();
+        } else if (!(rules instanceof ArrayList)) {
+            rules = new ArrayList<>(rules); // kopia modyfikowalna
+        }
+        rules.add(rule);
+    }
+
     @Data
     public static class Field {
+        private String id;
         private String label;
         private Boolean visible;
+        private Boolean required;
+        private String type;
         private List<String> options;
     }
 

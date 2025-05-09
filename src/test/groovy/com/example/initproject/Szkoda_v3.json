@@ -5,26 +5,40 @@
   },
   "fields": {
     "owner.hasClaimIn12Months": {
-      "label": "Czy miałeś szkodę w ciągu ostatnich 12 miesięcy?"
+      "id": "owner.hasClaimIn12Months",
+      "label": "Czy miałeś szkodę w ciągu ostatnich 12 miesięcy?",
+      "type": "boolean"
     },
     "owner.hasClaimIn6Months": {
+      "id": "owner.hasClaimIn6Months",
       "label": "Czy miałeś szkodę w ciągu ostatnich 6 miesięcy?",
-      "visible": false
+      "visible": false,
+      "required": false,
+      "type": "boolean"
     },
     "vehicle.vehicleType": {
+      "id": "vehicle.vehicleType",
       "label": "Typ pojazdu",
-      "options": ["SAMOCHÓD", "MOTOCYKL", "PRZYCZEPA"]
+      "options": ["SAMOCHÓD", "MOTOCYKL", "PRZYCZEPA"],
+      "type": "string"
     },
     "vehicle.isFromUK": {
-      "label": "Czy pojazd pochodzi z Wielkiej Brytanii?"
+      "id": "vehicle.isFromUK",
+      "label": "Czy pojazd pochodzi z Wielkiej Brytanii?",
+      "type": "boolean"
     },
     "vehicle.specialCaseSteering": {
-      "label": "Użyj niestandardowego ustawienia kierownicy"
+      "id": "vehicle.specialCaseSteering",
+      "label": "Użyj niestandardowego ustawienia kierownicy",
+      "type": "boolean"
     },
     "vehicle.steeringSide": {
+      "id": "vehicle.steeringSide",
       "label": "Po której stronie znajduje się kierownica?",
       "options": ["LEWA", "PRAWA"],
-      "visible": true
+      "visible": true,
+      "required": false,
+      "type": "string"
     }
   },
   "fieldGroups": [
@@ -124,6 +138,24 @@
             "key": "vehicle.specialCaseSteering",
             "operator": "EQUAL",
             "value": true
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "field": "vehicle.steeringSide",
+        "property": "required",
+        "value": true
+      },
+      "when": {
+        "operator": "AND",
+        "conditions": [
+          {
+            "source": "field",
+            "key": "vehicle.vehicleType",
+            "operator": "EQUAL",
+            "value": "SAMOCHÓD"
           }
         ]
       }
