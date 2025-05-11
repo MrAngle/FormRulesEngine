@@ -6,6 +6,8 @@ import formruleengine.FormDef_v3.domain.ClaimForm
 import formruleengine.FormDef_v3.predicate.PredicateContext
 import formruleengine.FormDef_v3.predicate.RuleEvaluator
 import formruleengine.FormDef_v3.formgeneratordomain.FormGeneratorDomain
+import formruleengine.FormDef_v4.FormSubmissionDto
+import formruleengine.FormDef_v4.FormValidator
 import formruleengine.FormDefinition
 import formruleengine.JsonFormDefinitionProvider
 import spock.lang.Specification
@@ -132,6 +134,41 @@ class InitProjectApplicationTests extends Specification {
 //        results.any { it.field == "owner.hasClaimIn6Months" && it.property == "visible" && it.value == true }
         printJson(definition) == true
     }
+
+
+    // V4
+    def "test engine with child FormDefinition_v4"() {
+        when:
+        def formDefinition = new JsonFormDefinitionProvider()
+        def filePath = "Step1_v4.json"
+
+        def definition = formDefinition.getFormDefinition_v4(filePath)
+
+        def submission = new FormSubmissionDto(
+                "FORM_ID_IDENTYFIKACJA",
+                "1.0.0",
+                Map.of(
+                        "identityMethod", "PESEL/NIP/REGON",
+                        "nationalId", "92010112345",
+                        "birthDate", "",
+                        "noVehicle", false,
+                        "vinNumber", "WBA3A9C59EF586739",
+                        "registrationNumber", ""
+                )
+        )
+
+        def value = FormValidator.validateSubmission(definition, submission)
+
+
+        then:
+        definition != null
+        and:
+
+
+
+        printJson(definition) == true
+    }
+
 
     def printJson(def definition) {
         def mapper = new ObjectMapper()

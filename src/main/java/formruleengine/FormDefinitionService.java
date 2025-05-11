@@ -1,6 +1,7 @@
 package formruleengine;
 
 import formruleengine.FormDef_v3.FormDefinition_v3;
+import formruleengine.FormDef_v4.FormSchema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,10 @@ class FormDefinitionService {
 
     public FormDefinition_v3 getFormDefinition_v3(String filePath) {
         return formDefinitionProvider.getFormDefinition_v3(filePath);
+    }
+
+    public FormSchema getFormDefinition_v4(String filePath) {
+        return formDefinitionProvider.getFormDefinition_v4(filePath);
     }
 
 

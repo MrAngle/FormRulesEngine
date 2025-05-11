@@ -2,6 +2,7 @@ package formruleengine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import formruleengine.FormDef_v3.FormDefinition_v3;
+import formruleengine.FormDef_v4.FormSchema;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -39,6 +40,16 @@ public class JsonFormDefinitionProvider implements FormDefinitionProvider {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(new File(sourcePath + filePath), FormDefinition_v3.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse JSON file: " + filePath, e);
+        }
+    }
+
+    @Override
+    public FormSchema getFormDefinition_v4(String filePath) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(new File(sourcePath + filePath), FormSchema.class);
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse JSON file: " + filePath, e);
         }
