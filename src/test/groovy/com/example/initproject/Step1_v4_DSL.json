@@ -57,11 +57,10 @@
       "visible": true
     }
   },
-
   "actions": [
     {
       "when": {
-        "field": "identityMethod",
+        "target": "identityMethod",
         "operator": "EQUAL",
         "value": "Data urodzenia"
       },
@@ -78,7 +77,7 @@
     },
     {
       "when": {
-        "field": "identityMethod",
+        "target": "identityMethod",
         "operator": "EQUAL",
         "value": "PESEL/NIP/REGON"
       },
@@ -95,7 +94,7 @@
     },
     {
       "when": {
-        "field": "noVehicle",
+        "target": "noVehicle",
         "operator": "EQUAL",
         "value": true
       },
@@ -113,8 +112,8 @@
       "when": {
         "operator": "AND",
         "conditions": [
-          { "field": "vinNumber", "operator": "EQUAL", "value": "" },
-          { "field": "registrationNumber", "operator": "EQUAL", "value": "" }
+          { "target": "vinNumber", "operator": "EQUAL", "value": "" },
+          { "target": "registrationNumber", "operator": "EQUAL", "value": "" }
         ]
       },
       "actions": [
@@ -126,13 +125,29 @@
       "when": {
         "operator": "OR",
         "conditions": [
-          { "field": "vinNumber", "operator": "NOT_EQUAL", "value": "" },
-          { "field": "registrationNumber", "operator": "NOT_EQUAL", "value": "" }
+          { "target": "vinNumber", "operator": "NOT_EQUAL", "value": "" },
+          { "target": "registrationNumber", "operator": "NOT_EQUAL", "value": "" }
         ]
       },
       "actions": [
         { "target": "vinNumber", "properties": { "required": false } },
         { "target": "registrationNumber", "properties": { "required": false } }
+      ]
+    },
+    {
+      "when": {
+        "source": "predicate",
+        "target": "isNewUser",
+        "operator": "EQUAL",
+        "value": true
+      },
+      "actions": [
+        {
+          "target": "birthDate",
+          "properties": {
+            "visible": false
+          }
+        }
       ]
     }
   ]

@@ -74,10 +74,12 @@ public class FormSchema {
     @AllArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class SimpleCondition implements Condition {
-        private String field;
+        @JsonProperty("target")
+        private String target;
+//        private String field;
         private String operator;
         private Object value;
-        private String source; // optional
+        private String source = "field"; // optional
     }
 
     @Data

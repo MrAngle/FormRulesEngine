@@ -5,10 +5,8 @@ WHEN identityMethod == 'Data urodzenia' THEN
     nationalId.required = false;
 
 WHEN identityMethod == 'PESEL/NIP/REGON' THEN
-    nationalId.visible = true,
-    nationalId.required = true,
-    birthDate.visible = false,
-    birthDate.required = false;
+    @macro(enable, field:nationalId),
+    @macro(disable, field:birthDate)
 
 WHEN noVehicle == true THEN
     group_vehicle.visible = false,
@@ -21,3 +19,6 @@ WHEN vinNumber == '' AND registrationNumber == '' THEN
 WHEN vinNumber != '' OR registrationNumber != '' THEN
     vinNumber.required = false,
     registrationNumber.required = false;
+
+WHEN predicate:isNewUser == true THEN
+    birthDate.visible = false;

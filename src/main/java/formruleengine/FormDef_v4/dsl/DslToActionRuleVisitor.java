@@ -58,11 +58,15 @@ public class DslToActionRuleVisitor extends FormRulesBaseVisitor<FormSchema.Acti
     }
 
     private FormSchema.SimpleCondition toSimpleCondition(FormRulesParser.ExpressionContext ctx) {
+        String source = (ctx.source != null)
+                ? ctx.source.getText().replace(":", "")  // np. "predicate:" → "predicate"
+                : "field"; // domyślny source
+
         return new FormSchema.SimpleCondition(
-                ctx.field.getText(),
-                mapOperator(ctx.op.getText()),
-                parseValue(ctx.val),
-                null
+                ctx.key.getText(),                        // np. isNewUser, vinNumber
+                mapOperator(ctx.op.getText()),            // "==" → "EQUAL"
+                parseValue(ctx.val),                      // wartość logiczna, tekst lub liczba
+                source
         );
     }
 

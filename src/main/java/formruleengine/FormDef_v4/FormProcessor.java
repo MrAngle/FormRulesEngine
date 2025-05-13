@@ -71,7 +71,7 @@ public class FormProcessor {
 
     private static boolean evaluateCondition(FormSchema.Condition condition, Map<String, FormSchema.Field> fields) {
         if (condition instanceof FormSchema.SimpleCondition simple) {
-            String fieldKey = simple.getField();
+            String fieldKey = simple.getTarget();
             Object valueInSchema = fields.containsKey(fieldKey) ? fields.get(fieldKey).getDefaultValue() : null;
             return compareValues(valueInSchema, simple.getOperator(), simple.getValue());
         }

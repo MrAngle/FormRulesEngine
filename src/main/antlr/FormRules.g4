@@ -14,7 +14,9 @@ condition
     : expression (LOGIC_OP expression)* ;
 
 expression
-    : field=IDENTIFIER op=OPERATOR val=value ;
+    : (source=SOURCE_COLON)? key=IDENTIFIER op=OPERATOR val=value ;
+
+SOURCE_COLON : ('predicate' | 'field') ':' ;
 
 actionBlock
     : action (COMMA action)* ;

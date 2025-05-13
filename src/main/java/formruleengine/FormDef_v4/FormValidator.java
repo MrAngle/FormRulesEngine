@@ -161,7 +161,7 @@ public class FormValidator {
 
     private static boolean evaluateCondition(FormSchema.Condition condition, Map<String, Object> answers) {
         if (condition instanceof FormSchema.SimpleCondition simple) {
-            Object actualValue = answers.get(simple.getField());
+            Object actualValue = answers.get(simple.getTarget());
             return compare(actualValue, simple.getOperator(), simple.getValue());
         }
 
