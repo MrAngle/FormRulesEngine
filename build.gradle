@@ -2,6 +2,8 @@ plugins {
     id 'groovy'
     id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'antlr'
+    id 'idea'
 }
 
 group = 'com.example'
@@ -31,7 +33,33 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.38")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    antlr "org.antlr:antlr4:4.13.0"
 }
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+generateGrammarSource {
+    arguments += ['-visitor', '-long-messages']
+    outputDirectory = file("$buildDir/generated-src/antlr/main")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated-src/antlr/main"
+        }
+    }
+}
+
+idea {
+    module {
+        generatedSourceDirs += file("$buildDir/generated-src/antlr/main")
+    }
+}
+
+
+tasks.named('compileJava') {
+    dependsOn tasks.generateGrammarSource
 }

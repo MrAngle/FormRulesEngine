@@ -20,6 +20,7 @@ public class FormSchema {
     private String formId;
     private String version;
     private String formName;
+    private String rulesDsl;
     private Map<String, Field> schema;
     private Map<String, Group> groups;
     private List<ActionRule> actions;

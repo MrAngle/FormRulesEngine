@@ -1,0 +1,139 @@
+{
+  "formId": "FORM_ID_IDENTYFIKACJA",
+  "version": "1.0.0",
+  "formName": "formularzIdentyfikacyjny",
+  "schema": {
+    "identityMethod": {
+      "label": "Wybierz metodę identyfikacji",
+      "type": "string",
+      "possibleOptions": ["PESEL/NIP/REGON", "Data urodzenia"],
+      "defaultValue": "PESEL/NIP/REGON",
+      "required": false,
+      "visible": true,
+      "editable": true
+    },
+    "birthDate": {
+      "label": "Data urodzenia",
+      "type": "string",
+      "defaultValue": "",
+      "regex": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "nationalId": {
+      "label": "PESEL / NIP / REGON",
+      "type": "string",
+      "defaultValue": "",
+      "regex": "^(\\d{11}|\\d{10}|\\d{9})$"
+    },
+    "noVehicle": {
+      "label": "Nie mam jeszcze pojazdu",
+      "type": "boolean",
+      "defaultValue": false,
+      "required": false
+    },
+    "vinNumber": {
+      "label": "Numer VIN",
+      "type": "string",
+      "defaultValue": "",
+      "regex": "^[A-HJ-NPR-Z0-9]{17}$"
+    },
+    "registrationNumber": {
+      "label": "Numer rejestracyjny",
+      "type": "string",
+      "defaultValue": "",
+      "regex": "^[A-Z0-9]{5,10}$"
+    }
+  },
+  "groups": {
+    "group_identity": {
+      "label": "Dane identyfikacyjne",
+      "fields": ["identityMethod", "birthDate", "nationalId"],
+      "required": true,
+      "visible": true
+    },
+    "group_vehicle": {
+      "label": "Dane pojazdu",
+      "fields": ["vinNumber", "registrationNumber", "noVehicle"],
+      "required": true,
+      "visible": true
+    }
+  },
+
+  "actions": [
+    {
+      "when": {
+        "field": "identityMethod",
+        "operator": "EQUAL",
+        "value": "Data urodzenia"
+      },
+      "actions": [
+        {
+          "target": "birthDate",
+          "properties": { "visible": true, "required": true }
+        },
+        {
+          "target": "nationalId",
+          "properties": { "visible": false, "required": false }
+        }
+      ]
+    },
+    {
+      "when": {
+        "field": "identityMethod",
+        "operator": "EQUAL",
+        "value": "PESEL/NIP/REGON"
+      },
+      "actions": [
+        {
+          "target": "nationalId",
+          "properties": { "visible": true, "required": true }
+        },
+        {
+          "target": "birthDate",
+          "properties": { "visible": false, "required": false }
+        }
+      ]
+    },
+    {
+      "when": {
+        "field": "noVehicle",
+        "operator": "EQUAL",
+        "value": true
+      },
+      "actions": [
+        {
+          "target": "group_vehicle",
+          "properties": {
+            "visible": false,
+            "required": false
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "operator": "AND",
+        "conditions": [
+          { "field": "vinNumber", "operator": "EQUAL", "value": "" },
+          { "field": "registrationNumber", "operator": "EQUAL", "value": "" }
+        ]
+      },
+      "actions": [
+        { "target": "vinNumber", "properties": { "required": true } },
+        { "target": "registrationNumber", "properties": { "required": true } }
+      ]
+    },
+    {
+      "when": {
+        "operator": "OR",
+        "conditions": [
+          { "field": "vinNumber", "operator": "NOT_EQUAL", "value": "" },
+          { "field": "registrationNumber", "operator": "NOT_EQUAL", "value": "" }
+        ]
+      },
+      "actions": [
+        { "target": "vinNumber", "properties": { "required": false } },
+        { "target": "registrationNumber", "properties": { "required": false } }
+      ]
+    }
+  ]
+}
