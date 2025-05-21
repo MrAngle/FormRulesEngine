@@ -1,0 +1,224 @@
+{
+  "controls": [
+    {
+      "name": "customerType",
+      "label": "Rodzaj klienta",
+      "props": {
+        "options": [
+          {
+            "label": "Firma",
+            "value": "001"
+          },
+          {
+            "label": "Osoba prywatna",
+            "value": "002"
+          }
+        ]
+      }
+    },
+    {
+      "name": "address",
+      "type": "group",
+      "props": {
+        "label": {
+          "default": "Adres zamieszkania",
+          "valueWhen": {
+            "group": "OR",
+            "rules": [
+              {
+                "name": "VIN is empty",
+                "when": {
+                  "field": "vinNumber",
+                  "operator": "EQUAL",
+                  "value": ""
+                }
+              },
+              {
+                "name": "REG is empty",
+                "when": {
+                  "field": "registrationNumber",
+                  "operator": "EQUAL",
+                  "value": ""
+                }
+              }
+            ],
+            "then": {
+              "value": "21:37"
+            }
+          }
+          //          "when": {
+          //            "field": "customerType",
+          //            "operator": "EQUAL",
+          //            "value": "001",
+          //            "then": "Adres siedziby"
+          //          },
+          //          "then": {
+          //            "value"
+          //          }
+        },
+        "defaultValue": {
+          "when": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "target": "CONTEXT",
+                "field": "cepikContext",
+                "operator": "NOT_EQUAL",
+                "value": null
+              }
+            ]
+          },
+          "then": {
+            "value": {
+              "source": "CONTEXT",
+              "target": "cepikContext",
+              "value": "cepikContext.address"
+            }
+          }
+        },
+        "controls": [
+          {
+            "name": "city",
+            "validators": [
+              {
+                "name": "required",
+                "when": {
+                  "operator": "AND",
+                  "conditions": [
+                    {
+                      "field": "customerType",
+                      "operator": "EQUAL",
+                      "value": "001"
+                    },
+                    {
+                      "predicate": "isGUSAvailable",
+                      "operator": "EQUAL",
+                      "value": true
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "minValue",
+                "props": {
+                  "value": 18
+                },
+                "when": {
+                  "operator": "AND",
+                  "conditions": [
+                    {
+                      "field": "customerType",
+                      "operator": "EQUAL",
+                      "value": "001"
+                    },
+                    {
+                      "predicate": "isGUSAvailable",
+                      "operator": "EQUAL",
+                      "value": true
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "minValue",
+                "props": {
+                  "value": 14
+                },
+                "when": {
+                  "operator": "AND",
+                  "conditions": [
+                    {
+                      "field": "customerType",
+                      "operator": "EQUAL",
+                      "value": "001"
+                    },
+                    {
+                      "predicate": "isGUSAvailable",
+                      "operator": "EQUAL",
+                      "value": true
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "nip",
+            "validators": [
+              {
+                "name": "regex",
+                "expression": "^\\d{10}$"
+              },
+              {
+                "name": "nipChecksumValidator"
+              }
+            ]
+          }
+        ]
+      },
+      "dependencies": [
+        {
+          "when": {
+            "field": "customerType",
+            "operator": "EQUAL",
+            "value": "001",
+            "actions": [
+              {
+                "props": {
+                  "label": "Adres siedziby"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "model",
+      "label": "Model pojazdu",
+      "props": {
+        "options": {
+          "source": {
+            "name": "vehicleModelsPredicate",
+            "type": "optionsSource",
+            "method": "POST",
+            "url": "https://google.com",
+            "fields": [
+              "city",
+              "nip"
+            ]
+          }
+        }
+      }
+    }
+  ],
+
+  "prefillContextRules": [
+    {
+      "actions": [
+        {
+          "options": {
+            "source": {
+              "method": "GET",
+              "url": "/api/models/{city}/{nip}",
+              "params": {
+                "city": {
+                  "field": "city",
+                  "in": "path"
+                },
+                "nip": {
+                  "field": "nip",
+                  "in": "path"
+                },
+                "limit": {
+                  "value": 50,
+                  "in": "query"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

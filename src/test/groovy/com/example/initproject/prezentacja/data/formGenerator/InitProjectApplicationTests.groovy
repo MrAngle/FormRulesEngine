@@ -1,12 +1,11 @@
-package com.example.initproject
+package com.example.initproject.prezentacja.data.formGenerator
 
+import com.example.initproject.InitProjectApplication
 import com.fasterxml.jackson.databind.ObjectMapper
 import formruleengine.FormDef_v3.FormDefinition_v3
-import formruleengine.FormDef_v3.domain.ClaimForm
 import formruleengine.FormDef_v3.predicate.PredicateContext
 import formruleengine.FormDef_v3.predicate.RuleEvaluator
 import formruleengine.FormDef_v3.formgeneratordomain.FormGeneratorDomain
-import formruleengine.FormDefinition
 import formruleengine.JsonFormDefinitionProvider
 import spock.lang.Specification
 

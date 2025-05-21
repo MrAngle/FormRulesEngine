@@ -1,0 +1,96 @@
+{
+  "validators": [
+    {
+      "type": "REGEX",
+      "label": "jakis",
+      "group": "XOR",
+      "rules": [
+        {
+          "name": "regex for PESEL",
+          "when": {
+            "field": "identityMethod",
+            "operator": "EQUAL",
+            "value": "PESEL/NIP/REGON"
+          },
+          "then": {
+            "action": "REPLACE",
+            "value": "^(\\d{11}|\\d{10}|\\d{9})$",
+            "label": "test"
+          }
+        },
+        {
+          "name": "regex for birthDate",
+          "when": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "field": "identityMethod",
+                "operator": "EQUAL",
+                "value": "Data urodzenia"
+              },
+              {
+                "field": "birthDate",
+                "operator": "NOT_EQUAL",
+                "value": ""
+              }
+            ]
+          },
+          "then": {
+            "action": "REPLACE",
+            "props": {
+              "value": "^\\d{4}-\\d{2}-\\d{2}$",
+              "label": "test"
+            }
+          }
+        }
+      ],
+      "defaultValue": {
+        "action": "REMOVE"
+      }
+    },
+    {
+      "type": "REQUIRED",
+      "defaultValue": true,
+      "valueWhen": {
+        "group": "OR",
+        "rules": [
+          {
+            "name": "VIN is empty",
+            "when": {
+              "field": "vinNumber",
+              "operator": "EQUAL",
+              "value": ""
+            }
+          }
+        ],
+        "then": {
+          "value": "test"
+        }
+      },
+      "activeWhen": {
+        "group": "OR",
+        "rules": [
+          {
+            "name": "VIN is empty",
+            "when": {
+              "field": "vinNumber",
+              "operator": "EQUAL",
+              "value": ""
+            }
+          },
+          {
+            "name": "REG is empty",
+            "when": {
+              "field": "registrationNumber",
+              "operator": "EQUAL",
+              "value": ""
+            }
+          }
+        ]
+      }
+    }
+  ],
+
+
+
+}

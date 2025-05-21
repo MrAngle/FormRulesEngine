@@ -1,0 +1,61 @@
+
+OGOLNE:
+- Wszystkie akcje mają postać struktur z funkcjami w stylu OOP (constructory).
+- Nazwy zmiennych po angielsku, camelCase.
+- Do debugowania używamy LOG_DEBUG_MESSAGE(msg).
+- Unikamy globalnych zmiennych, chyba że to CONFIG lub LAYER.
+- uzywamy lomboka
+- zwracaj uwagę na przypadki brzegowe
+- jest jakis przypadek nie jest obsluzony informuj o tym
+- krytykuj wszelkie rozwiazania i podejscia, proponuj alternatywy jesli widzisz taka opcje
+-  Wskaż listę najlepszych praktyk w zakresie
+- Review your provided code 'tempFunction' for any logical or security concerns and provide a list of recommendations.
+- Review your above recommendations. Tell me why you were wrong and if any recommendations were overlooked or incorrectly added?
+
+
+========================================================================
+TESTY, jesli napisze fraze &Testy to ustaw wysoki piorytet na te zaleznosci:
+- (BARDZO WAZNE) Nigdy nie definiuj testów tak ze spodziewanym zachowaniem jest throw(NullPointerException)
+Jesli brakuje obslugi tego przypadku to failuj test i nie wymuszaj aby byl passed
+
+Czyli np. Nigdy nie zapisuj:
+       then: "An exception is thrown"
+        thrown(NullPointerException)
+W zamian rob cos w stylu:
+    fail()
+aby wyraznie zaznaczyc ze jakis przypadek aktualnie nie przejdzie testow
+
+Description w testach
+Nigdy nie pisz: "Should fail for...", opisuj przypadek jaki nie powinien wystąpic
+nie zakładaj ze kod jest całkowicie poprawny, podwazaj logikę
+
+- (BARDZO WAZNE) Jesli jakas logika działania jest sprzeczna, to wyraznie wymuszaj logike jaka jest oczekiwana
+a nie sprawiaj ze test musi przejsc/zielony/passed
+
+
+- (BARDZO WAZNE) staraj sie znalezc wszystkie przypadki ktore nie sa obsłuzone, albo działa cos niepoprawnie
+ i je zgłaszaj oraz zapisuj je w taki sposób aby były failowały i aby testy okreslaly stan oczekiwany dla danego scenairusza.
+- definiuj rowniez testy brzegowe
+- nie przesadzaj z parametryzacja w testach, test musi byc czytelny i jesli to konieczne
+ to rozbij go na kilka przypadkow.
+- jesli widzisz jakies miejsce w kodzie ktore nie jest obsluzone, dodawaj komentarz w wygnerowanym
+tescie jako zaznaczenie ze ten scenariusz nie został uwzględniony
+- pamietaj ze w spocku porównywanie typów (np. double i bigdecimal) nalezy załatwic inaczej niz znakami "=="
+- unikaj duplikacji testow/scenariuszy
+- pamietaj ze jak piszesz kod w spock (groovy) to musi byc on zgody z zalozeniami java! W tym konstruktory/parametry itp.
+- nie zapominaj pokryc najwazniejszych scenariuszy testowych happy pathów
+
+testy znajduja sie w folderze: src/test/groovy/com/example/initproject/{package}
+
+
+========================================================================
+UWAGI:
+Maxymalna liczba znakow w lini to 121 - pilnuj tego
+
+Unikaj komentarzy w kodzie - wyjątkiem sa sytuacje, ktore moga prowadzic do błędów/lub koniecznosc dodania funkcjonalnosci (TODO)
+Uzywaj terminów angielskich
+Pisz kod w języku angielskim
+
+Potwierdzaj ze przeczytales te uwagi, jako informacja dla mnie ze to przeanalizowales (wersja v6)!!
+Kwestionuj, krytykuj i informuj jesli potrzebujesz szerszego kontekstu
+
