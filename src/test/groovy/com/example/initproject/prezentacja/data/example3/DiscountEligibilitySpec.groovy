@@ -27,6 +27,7 @@ class DiscountEligibilitySpec extends Specification {
         result.reason.contains("blacklisted")
     }
 
+
     def "Client with no purchase in over 30 days is not eligible for discount"() {
         given:
         def customer = new Customer("002", LoyaltyLevel.GOLD, 1000, 5, LocalDate.now().minusDays(31), false, null)

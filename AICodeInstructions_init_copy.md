@@ -1,7 +1,7 @@
 VERSION: 1.05
-Potwierdź, że przeczytałeś i przeanalizowałeś te zasady z konkretna wersja.
+ZAWSZE Potwierdzaj, że przeczytałeś i przeanalizowałeś te zasady z konkretna wersja.
 
-📌 ZASADY OGÓLNE
+📌 ZASADY OGÓLNE 
 
     Wszystkie akcje powinny być implementowane jako struktury z metodami w stylu obiektowym (OOP), z użyciem konstruktorów.
 
@@ -26,7 +26,7 @@ Potwierdź, że przeczytałeś i przeanalizowałeś te zasady z konkretna wersja
     Zweryfikuj swoje rekomendacje – wskaż, które były błędne, pominięte lub niepotrzebne.
 
 🧪 TESTY (priorytet jesli uzyty zapis "&Testy" - potwierdz ze o tym wiesz)
-    W testach uzywany jest spock
+W testach uzywany jest spock
 
     Testy powinny znajdować się w folderze:
     src/test/groovy/com/example/initproject/{package}
@@ -34,24 +34,24 @@ Potwierdź, że przeczytałeś i przeanalizowałeś te zasady z konkretna wersja
     Nie przesadzaj z parametryzacją – testy powinny być czytelne. W razie potrzeby rozdzielaj przypadki.
 
     W Spocku należy porównywać typy (np. double i BigDecimal) w sposób właściwy – unikaj == w takich przypadkach. Wtedy uzywaj Math
-    def "porównanie long i BigDecimal"() {
-        given:
-        long wartoscLong = 10L
-        BigDecimal wartoscBigDecimal = new BigDecimal("10.00")
 
-        expect:
-        BigDecimal.valueOf(wartoscLong).compareTo(wartoscBigDecimal) == 0
-    }
+    Kod w Spocku (Groovy) musi być zgodny z zasadami języka Java – w szczególności jeśli chodzi o konstruktory i parametry.
 
-    Kod w Spocku (Groovy) powinien być zgodny z zasadami języka Java – w szczególności jeśli chodzi o konstruktory i parametry.
+	(BARDZO WAŻNE) Jeśli logika działania jest niejednoznaczna lub sprzeczna – wymuszaj oczekiwane zachowanie. Nie dopuszczaj do sytuacji, w której test „przechodzi”, mimo że zachowanie nie jest jasne.
 
-    Staraj się wychwycić wszystkie nieobsłużone przypadki oraz błędne zachowania. Każdy zidentyfikowany przypadek zapisz jako test, który powinien failować i jednoznacznie opisywać oczekiwany rezultat.
+    Uwazaj z porownywaniem po referencji, jesli porownywane sa obiekty
+
+    Staraj się wychwycić wszystkie nieobsłużone przypadki oraz błędne zachowania.
 
     Uwzględniaj testy brzegowe.
 
-    Jeśli jakiś scenariusz nie został zaimplementowany – dodaj komentarz w wygenerowanym teście z informacją, że ten przypadek nie został jeszcze uwzględniony.
-		
-	wygeneruj kompletne testy jednostkowe dla poniższej metody, obejmujące:
+    Jeśli jakiś scenariusz nie został uwzgledniony, stworz test (w tym null checki) – dodaj komentarz w wygenerowanym teście z informacją, że ten przypadek nie został jeszcze uwzględniony.
+    
+    Uwzglednij w testach sprawdzanie czy moze poleciec NPE
+
+    Unikaj duplikacji testów/scenariuszy.
+
+    wygeneruj kompletne testy jednostkowe dla poniższej metody, obejmujące:
     Scenariusze pozytywne (poprawne dane wejściowe).
     Scenariusze negatywne (błędne dane wejściowe).
     Przypadki brzegowe.
@@ -61,40 +61,29 @@ Potwierdź, że przeczytałeś i przeanalizowałeś te zasady z konkretna wersja
     Oczekiwany wynik.
     Odpowiednie asercje
 
-    Unikaj duplikacji testów/scenariuszy.
-    
-    Uwzglednij w testach sprawdzanie czy moze poleciec NPE
-	
-	Uwazaj z porownywaniem po referencji, jesli porownywane sa obiekty
-	
-	(BARDZO WAŻNE) Jeśli logika działania jest niejednoznaczna lub sprzeczna – wymuszaj oczekiwane zachowanie. Nie dopuszczaj do sytuacji, w której test „przechodzi”, mimo że zachowanie nie jest jasne.
-
     (BARDZO WAŻNE) Nigdy nie twórz testów, w których oczekiwanym rezultatem jest throw(NullPointerException).
     Zamiast tego, w przypadku braku obsługi danej sytuacji, test powinien zakończyć się fail(), aby wyraźnie zasygnalizować niezaimplementowany przypadek.
-    ❌ Niepoprawnie: then: "An exception is thrown" thrown(NullPointerException)
+    ❌ Niepoprawnie: then: "An exception is thrown" thrown(NullPointerException) - to nie jest oczekiwany rezultat
     ✅ Poprawnie: then: fail("This case is currently not handled.")
 
     Opis w testach:
     Nigdy nie pisz opisu typu "Should fail for...". Zamiast tego, opisuj przypadek, który nie powinien mieć miejsca.
     Nie zakładaj, że kod jest poprawny – kwestionuj jego logikę.
 
-    Nie zapominaj o pokryciu kluczowych scenariuszy tzw. happy paths.
-
-	I want to test the functionality of my web application. Are the following test cases/scenarios enough for 100% test coverage? 
-
+    I want to test the <functionality name> functionality of my web application. Are the following test cases/scenarios enough for 100% test coverage?
 
 🛠️ DODATKOWE UWAGI I STANDARDY
 
-    Maksymalna długość linii: 121 znaków – przestrzegaj tego limitu.
-	
-	Jeśli ograniczenia długości odpowiedzi uniemożliwiają przedstawienie pełnej odpowiedzi, poinformuj mnie o tym wyraźnie. W takim przypadku skup się na konkretnych elementach i kontynuuj odpowiedź w kolejnych wiadomościach.
+    Jeśli ograniczenia długości odpowiedzi uniemożliwiają przedstawienie pełnej odpowiedzi, poinformuj mnie o tym wyraźnie. W takim przypadku skup się na konkretnych elementach i kontynuuj odpowiedź w kolejnych wiadomościach.
 
     Unikaj komentarzy w kodzie, z wyjątkiem sytuacji wyjątkowych (np. możliwe błędy, TODO).
 
     Używaj terminologii angielskiej.
 
-    Cały kod powinien być pisany w języku angielskim. 
-    Przykladowo "czarnej lista" nazywaj jako black list
-    "Punkt wejscia" jako "endpoint"
+    Utrzymuj ton techniczny i precyzyjny, skupiając się na jasnym przedstawieniu przypadków testowych i oczekiwanych wyników
+
+    Cały kod powinien być pisany w języku angielskim.
+
+    Maksymalna długość linii: 121 znaków – przestrzegaj tego limitu.
 
     Kwestionuj, krytykuj i proś o dodatkowy kontekst, jeśli jest to potrzebne.

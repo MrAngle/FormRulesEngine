@@ -35,6 +35,7 @@ public class DiscountEligibilityChecker3 {
     }
 
     public DiscountDecision checkDiscount(Customer customer) {
+//        return null;
         if (customer.isBlacklisted) {
             return new DiscountDecision(false, "Customer is blacklisted", 0.0);
         }
