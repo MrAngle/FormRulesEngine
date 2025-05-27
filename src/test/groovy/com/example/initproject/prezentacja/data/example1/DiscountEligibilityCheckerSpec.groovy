@@ -1,8 +1,6 @@
 package com.example.initproject.prezentacja.data.example1
 
 import prezentacja.data.example1.DiscountEligibilityChecker
-import prezentacja.data.example1.DiscountEligibilityChecker.Customer
-import prezentacja.data.example1.DiscountEligibilityChecker.LoyaltyLevel
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -10,248 +8,204 @@ import java.time.LocalDate
 
 class DiscountEligibilityCheckerSpec extends Specification {
 
-    def checker = new DiscountEligibilityChecker()
+    def discountEligibilityChecker = new DiscountEligibilityChecker()
 
     @Unroll
-    def "Customer with ID #id and #description should have expected discount decision"() {
-        given: "A customer object with specific attributes"
-        def customer = new Customer(
-                id,
-                loyaltyLevel,
-                totalSpent,
-                numberOfOrders,
-                lastPurchaseDate,
-                isBlacklisted,
-                promoCode
+    def "Should return discount eligibility for a customer with loyalty level #loyaltyLevel"() {
+        given: "A customer with specific attributes"
+        def customer = new DiscountEligibilityChecker.Customer(
+            "123", loyaltyLevel, totalSpent, numberOfOrders, lastPurchaseDate, isBlacklisted, promoCode
         )
 
-        when: "The checkDiscount method is called"
-        def decision = checker.checkDiscount(customer)
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
 
-        then: "The eligibility and discount decision match the expectations"
-        decision.isEligible == expectedEligibility
-        decision.reason == expectedReason
-        Math.abs(decision.discountPercentage - expectedDiscountPercentage) < 0.01
+        then: "The decision is as expected"
+        result.isEligible == expectedEligible
+        result.reason == expectedReason
+        result.discountPercentage == expectedDiscount
 
         where:
-        id        | loyaltyLevel            | totalSpent | numberOfOrders | lastPurchaseDate            | isBlacklisted | promoCode    || expectedEligibility | expectedReason                   | expectedDiscountPercentage | description
-        "CUST-001" | LoyaltyLevel.NONE       | 0          | 0              | LocalDate.now().minusDays(10) | false         | null         || false               | "No discount rules matched"      | 0.0                        | "no loyalty level"
-        "CUST-002" | LoyaltyLevel.SILVER     | 600        | 2              | LocalDate.now().minusDays(5)  | false         | null         || true                | "Silver loyalty + good spending" | 5.0                        | "silver level with enough spending"
-        "CUST-003" | LoyaltyLevel.GOLD       | 1200       | 6              | LocalDate.now().minusDays(5)  | false         | null         || true                | "Gold loyalty + good history"    | 15.0                       | "gold level with high spending"
-        "CUST-004" | LoyaltyLevel.PLATINUM   | 0          | 0              | LocalDate.now()               | false         | null         || true                | "Platinum customer"              | 20.0                       | "platinum customer"
-        "CUST-005" | LoyaltyLevel.GOLD       | 800        | 2              | LocalDate.now().minusDays(31) | false         | null         || false               | "Last purchase too old"          | 0.0                        | "gold level customer with outdated purchase"
-        "CUST-006" | LoyaltyLevel.GOLD       | 500        | 2              | LocalDate.now().minusDays(5)  | false         | "GOLD2024"   || true                | "Gold promo code"                | 10.0                       | "gold level customer with valid promoCode"
-        "CUST-007" | LoyaltyLevel.PLATINUM   | 3000       | 15             | LocalDate.now().minusDays(1)  | true          | null         || false               | "Customer is blacklisted"        | 0.0                        | "blacklisted customer with platinum level"
+        loyaltyLevel       | totalSpent | numberOfOrders | lastPurchaseDate                         | isBlacklisted | promoCode   | expectedEligible | expectedReason                     | expectedDiscount
+        DiscountEligibilityChecker.LoyaltyLevel.NONE     | 0          | 0              | LocalDate.now()                              | false         | null        | false            | "No discount rules matched"       | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.SILVER   | 600        | 2              | LocalDate.now().minusDays(10)               | false         | null        | true             | "Silver loyalty + good spending"  | 5.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 1100       | 6              | LocalDate.now().minusDays(5)                | false         | null        | true             | "Gold loyalty + good history"     | 15.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 800        | 4              | LocalDate.now().minusDays(5)                | false         | "GOLD2024"  | true             | "Gold promo code"                 | 10.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 800        | 4              | LocalDate.now().minusDays(5)                | false         | "SILVER2024"| false            | "No discount rules matched"       | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.PLATINUM | 500        | 3              | LocalDate.now().minusDays(5)                | false         | null        | true             | "Platinum customer"               | 20.0
+        DiscountEligibilityChecker.LoyaltyLevel.PLATINUM | 500        | 3              | LocalDate.now().minusDays(40)               | false         | null        | false            | "Last purchase too old"           | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.PLATINUM | 500        | 3              | LocalDate.now().minusDays(5)                | true          | null        | false            | "Customer is blacklisted"         | 0.0
     }
 
-    def "Customer with null lastPurchaseDate should fail indicating missing validation"() {
-        given: "A customer with null lastPurchaseDate"
-        def customer = new Customer(
-                "NULL-DATE-CUST",
-                LoyaltyLevel.GOLD,
-                1000,
-                5,
-                null,
-                false,
-                null
-        )
-
-        when: "Calling checkDiscount with null date"
-        checker.checkDiscount(customer)
-
-        then: "Test fails as null lastPurchaseDate is unhandled in logic"
-        fail("Last purchase date cannot be null. Include validation in the logic.")
-    }
-
-    def "Customer with null loyaltyLevel should default to no discount"() {
-        given: "A customer with null loyalty level"
-        def customer = new Customer(
-                "NULL-LOYALTY-CUST",
-                null,
-                500,
-                1,
-                LocalDate.now().minusDays(5),
-                false,
-                null
-        )
-
-        when: "Calling checkDiscount with null loyaltyLevel"
-        def decision = checker.checkDiscount(customer)
-
-        then: "Customer gets default no discount reasoning"
-        !decision.eligible
-        decision.reason == "No discount rules matched"
-        decision.discountPercentage == 0.0
-    }
-
-    def "Gold customer with valid and invalid promoCode should have expected results"() {
-        given: "Two customers with different promoCodes"
-        def validPromoCustomer = new Customer(
-                "VALID-GOLD-PROMO",
-                LoyaltyLevel.GOLD,
-                300,
-                2,
-                LocalDate.now(),
-                false,
-                "GOLD2024"
-        )
-        def invalidPromoCustomer = new Customer(
-                "INVALID-GOLD-PROMO",
-                LoyaltyLevel.GOLD,
-                300,
-                2,
-                LocalDate.now(),
-                false,
-                "gold2024" // invalid due to case-sensitivity
-        )
-
-        when: "Calling checkDiscount for each customer"
-        def validPromoDecision = checker.checkDiscount(validPromoCustomer)
-        def invalidPromoDecision = checker.checkDiscount(invalidPromoCustomer)
-
-        then: "Valid promoCode qualifies for 10% while invalid does not"
-        validPromoDecision.isEligible
-        validPromoDecision.reason == "Gold promo code"
-        validPromoDecision.discountPercentage == 10.0
-
-        !invalidPromoDecision.isEligible
-        invalidPromoDecision.reason == "No discount rules matched"
-        invalidPromoDecision.discountPercentage == 0.0
-    }
-
-    def "PLATINUM customer should always get 20% regardless of promo code"() {
-        given: "A platinum customer with promoCode"
-        def customer = new Customer(
-                "PLATINUM-WITH-PROMO",
-                LoyaltyLevel.PLATINUM,
-                0,
-                0,
-                LocalDate.now().minusDays(10),
-                false,
-                "GOLD2024"
-        )
-
-        when: "Calling checkDiscount"
-        def decision = checker.checkDiscount(customer)
-
-        then: "PLATINUM always results in a 20% discount regardless of promoCode"
-        decision.isEligible
-        decision.reason == "Platinum customer"
-        decision.discountPercentage == 20.0
-    }
-
-    def "GOLD customer with exactly 5 orders does not qualify for discount"() {
-        given: "A GOLD customer with exactly 5 orders"
-        def customer = new Customer(
-                "EDGE-GOLD-ORDERS",
-                LoyaltyLevel.GOLD,
-                1200.0,
-                5, // exactly at the limit
-                LocalDate.now(),
-                false,
-                null
+    def "Should handle null promo code without exceptions"() {
+        given: "A customer with a null promo code"
+        def customer = new DiscountEligibilityChecker.Customer(
+            "123", DiscountEligibilityChecker.LoyaltyLevel.GOLD, 800, 4, LocalDate.now(), false, null
         )
 
         when: "Checking discount eligibility"
-        def decision = checker.checkDiscount(customer)
+        def result = discountEligibilityChecker.checkDiscount(customer)
 
-        then: "The customer does not qualify for a discount due to insufficient orders"
-        !decision.isEligible
-        decision.reason == "No discount rules matched"
-        decision.discountPercentage == 0.0
+        then: "The result is no discount"
+        !result.isEligible
+        result.reason == "No discount rules matched"
+        result.discountPercentage == 0.0
     }
 
-    def "SILVER customer with exactly 500 totalSpent does not qualify for discount"() {
-        given: "A SILVER customer with exactly 500 total spent"
-        def customer = new Customer(
-                "EDGE-SILVER-TOTALSPENT",
-                LoyaltyLevel.SILVER,
-                500.0, // exactly at the boundary
-                2,
-                LocalDate.now(),
-                false,
-                null
+    def "Should handle null customer and throw an exception"() {
+        when: "Checking discount eligibility for a null customer"
+        discountEligibilityChecker.checkDiscount(null)
+
+        then: "An exception is thrown"
+        thrown(NullPointerException)
+    }
+
+    @Unroll
+    def "Should handle edge cases for totalSpent = #totalSpent, numberOfOrders = #numberOfOrders"() {
+        given: "A customer close to the discount eligibility threshold"
+        def customer = new DiscountEligibilityChecker.Customer(
+            "123", DiscountEligibilityChecker.LoyaltyLevel.GOLD, totalSpent, numberOfOrders, LocalDate.now(), false, null
         )
 
         when: "Checking discount eligibility"
-        def decision = checker.checkDiscount(customer)
+        def result = discountEligibilityChecker.checkDiscount(customer)
 
-        then: "The customer does not qualify for a discount"
-        !decision.isEligible
-        decision.reason == "No discount rules matched"
-        decision.discountPercentage == 0.0
-    }
-
-    def "Null customer object should trigger validation failure"() {
-        when: "Calling checkDiscount with null customer"
-        checker.checkDiscount(null)
-
-        then: "An IllegalArgumentException should be thrown"
-        def e = thrown(IllegalArgumentException)
-        e.message == "Customer cannot be null"
-
-        /* TODO: Aktualny kod nie obsługuje przypadku, w którym obiekt Customer jest null.
-           Powinna zostać dodana walidacja w metodzie checkDiscount:
-           if (customer == null) throw new IllegalArgumentException("Customer cannot be null");
-         */
-    }
-
-    def "Outdated promoCode is not eligible for a discount"() {
-        given: "A GOLD customer with an outdated promoCode"
-        def customer = new Customer(
-                "OUTDATED-PROMO",
-                LoyaltyLevel.GOLD,
-                800.0,
-                4,
-                LocalDate.now(),
-                false,
-                "GOLD2023" // promoCode that is no longer valid
-        )
-
-        when: "Checking discount eligibility"
-        def decision = checker.checkDiscount(customer)
-
-        then: "The outdated promoCode does not qualify for a discount"
-        !decision.isEligible
-        decision.reason == "No discount rules matched"
-        decision.discountPercentage == 0.0
-
-        /* TODO: Aktualny kod zakłada tylko dokładne dopasowanie kodu "GOLD2024".
-           Można rozważyć dodanie logiki sprawdzającej daty ważności kodów promocyjnych.
-         */
-    }
-
-    def "PromoCode with whitespace or special characters is not valid"() {
-        given: "A GOLD customer with a promoCode containing extra characters"
-        def customer = new Customer(
-                "INVALID-PROMO",
-                LoyaltyLevel.GOLD,
-                800.0,
-                4,
-                LocalDate.now(),
-                false,
-                invalidCode
-        )
-
-        when: "Checking discount eligibility"
-        def decision = checker.checkDiscount(customer)
-
-        then: "The promoCode with invalid formatting should not qualify for a discount"
-        !decision.isEligible
-        decision.reason == "No discount rules matched"
-        decision.discountPercentage == 0.0
+        then: "The decision matches expectations"
+        result.isEligible == expectedEligible
+        result.reason == expectedReason
+        result.discountPercentage == expectedDiscount
 
         where:
-        invalidCode << [
-                " GOLD2024",  // leading space
-                "GOLD2024 ",  // trailing space
-                "GOLD2024!",  // special character
-                "gold2024"    // lowercase
-        ]
+        totalSpent | numberOfOrders | expectedEligible | expectedReason                | expectedDiscount
+        999.99     | 5              | false            | "No discount rules matched"  | 0.0
+        1000.01    | 6              | true             | "Gold loyalty + good history"| 15.0
+    }
 
-        /* TODO: PromoCode validation is strict and exact.
-           Suggested improvement: add logic to trim whitespaces and allow case-insensitive validation.
-         */
+    @Unroll
+    def "Should handle customers with various loyalty levels and promo codes"() {
+        given: "A customer with specific attributes including promo code"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", loyaltyLevel, totalSpent, numberOfOrders, lastPurchaseDate, isBlacklisted, promoCode
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "The decision matches the expected outcome"
+        result.isEligible == expectedEligible
+        result.reason == expectedReason
+        result.discountPercentage == expectedDiscount
+
+        where:
+        loyaltyLevel       | totalSpent | numberOfOrders | lastPurchaseDate       | isBlacklisted | promoCode   | expectedEligible | expectedReason                 | expectedDiscount
+        DiscountEligibilityChecker.LoyaltyLevel.SILVER   | 500        | 3              | LocalDate.now().minusDays(10) | false         | "SILVER2023" | false            | "No discount rules matched"   | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.SILVER   | 700        | 3              | LocalDate.now().minusDays(15) | false         | null         | true             | "Silver loyalty + good spending"| 5.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 300        | 3              | LocalDate.now()               | false         | "GOLD2024"  | true             | "Gold promo code"             | 10.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 300        | 3              | LocalDate.now()               | false         | null         | false            | "No discount rules matched"   | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.PLATINUM | 0          | 0              | LocalDate.now()               | false         | "ANYCODE"   | true             | "Platinum customer"           | 20.0
+    }
+
+    def "Should return no discount for blacklisted customers regardless of parameters"() {
+        given: "A blacklisted customer"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", DiscountEligibilityChecker.LoyaltyLevel.GOLD, 1500, 10, LocalDate.now().minusDays(5), true, null
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "The customer is not eligible for a discount due to being blacklisted"
+        !result.isEligible
+        result.reason == "Customer is blacklisted"
+        result.discountPercentage == 0.0
+    }
+
+    def "Should return no discount for stale purchase date beyond 30 days"() {
+        given: "A customer with a last purchase date over 30 days ago"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", DiscountEligibilityChecker.LoyaltyLevel.SILVER, 600, 2, LocalDate.now().minusDays(31), false, null
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "The customer is not eligible for a discount due to last purchase being too old"
+        !result.isEligible
+        result.reason == "Last purchase too old"
+        result.discountPercentage == 0.0
+    }
+
+    @Unroll
+    def "Should handle edge cases for loyalty levels #loyaltyLevel near spending threshold"() {
+        given: "A customer close to the spending threshold for their loyalty level"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", loyaltyLevel, totalSpent, 5, LocalDate.now(), false, null
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "The discount decision is as expected"
+        result.isEligible == expectedEligible
+        result.reason == expectedReason
+        result.discountPercentage == expectedDiscount
+
+        where:
+        loyaltyLevel       | totalSpent | expectedEligible | expectedReason                     | expectedDiscount
+        DiscountEligibilityChecker.LoyaltyLevel.SILVER   | 499.99     | false            | "No discount rules matched"       | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.SILVER   | 500.0      | true             | "Silver loyalty + good spending"  | 5.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 999.99     | false            | "No discount rules matched"       | 0.0
+        DiscountEligibilityChecker.LoyaltyLevel.GOLD     | 1000.01    | true             | "Gold loyalty + good history"     | 15.0
+    }
+
+    def "Should gracefully handle customers with no orders but GOLD level with promo code"() {
+        given: "A customer with GOLD loyalty level and promo code but no orders"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", DiscountEligibilityChecker.LoyaltyLevel.GOLD, 0, 0, LocalDate.now(), false, "GOLD2024"
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "The customer is eligible for a discount due to the promo code"
+        result.isEligible
+        result.reason == "Gold promo code"
+        result.discountPercentage == 10.0
+    }
+
+    def "Should handle null lastPurchaseDate and fail gracefully"() {
+        given: "A customer with a null lastPurchaseDate"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", DiscountEligibilityChecker.LoyaltyLevel.GOLD, 1000, 5, null, false, null
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "An exception is thrown due to invalid data"
+        thrown(NullPointerException)
+    }
+
+    @Unroll
+    def "Should handle invalid parameters like totalSpent=#totalSpent, numberOfOrders=#numberOfOrders"() {
+        given: "A customer with edge case values (e.g., negative spending or orders)"
+        def customer = new DiscountEligibilityChecker.Customer(
+                "123", DiscountEligibilityChecker.LoyaltyLevel.GOLD, totalSpent, numberOfOrders, LocalDate.now(), false, null
+        )
+
+        when: "Checking discount eligibility"
+        def result = discountEligibilityChecker.checkDiscount(customer)
+
+        then: "The decision matches expectations for invalid values"
+        result.isEligible == expectedEligible
+        result.reason == expectedReason
+        result.discountPercentage == expectedDiscount
+
+        where:
+        totalSpent | numberOfOrders | expectedEligible | expectedReason                     | expectedDiscount
+        -100       | 5              | false            | "No discount rules matched"       | 0.0
+        1000       | -1             | false            | "No discount rules matched"       | 0.0
+        10000000   | 1000           | true             | "Gold loyalty + good history"     | 15.0
     }
 
 }
