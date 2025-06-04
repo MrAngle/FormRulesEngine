@@ -1,6 +1,6 @@
 package apiv2.dataprocurment.api.controller;
 
-import apiv2.dataprocurment.api.dto.request.UpdateVehicleDataRequest;
+import apiv2.dataprocurment.api.dto.request.VehicleDataRequest;
 import apiv2.dataprocurment.api.dto.response.VehicleDataResponse;
 import apiv2.dataprocurment.api.service.VehicleDataService;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class VehicleDataController {
     @PatchMapping
     public ResponseEntity<Void> patch(
             @PathVariable String salesId,
-            @RequestBody @Valid UpdateVehicleDataRequest request) {
+            @RequestBody @Valid VehicleDataRequest request) {
 
         vehicleDataService.updateVehicleData(salesId, request);
         return ResponseEntity.noContent().build();
@@ -33,14 +33,10 @@ public class VehicleDataController {
     @PutMapping
     public ResponseEntity<Void> put(
             @PathVariable String salesId,
-            @RequestBody @Valid UpdateVehicleDataRequest request) {
+            @RequestBody @Valid VehicleDataRequest request) {
 
         vehicleDataService.replaceVehicleData(salesId, request);
         return ResponseEntity.noContent().build();
     }
 
-//    @Override
-//    public String getBaseUrl() {
-//        return ApiPaths.VEHICLE_DATA;
-//    }
 }

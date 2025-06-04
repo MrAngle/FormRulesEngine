@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(API_PATHS.API_PATH_SALES)
+@RequestMapping(ApiPaths.SALES_BASE)
 @RequiredArgsConstructor
 public class SalesController {
 
@@ -19,7 +19,8 @@ public class SalesController {
 
     @PostMapping
     @Operation(summary = "Init sales process")
-    public ResponseEntity<apiv2.sales.api.dto.response.InitSalesResponse> initSale(@Valid @RequestBody apiv2.sales.api.dto.request.InitSalesRequest request) {
+    public ResponseEntity<apiv2.sales.api.dto.response.InitSalesResponse> initSale(
+            @Valid @RequestBody apiv2.sales.api.dto.request.InitSalesRequest request) {
         return ResponseEntity.ok(salesApiService.initialize(request));
     }
 

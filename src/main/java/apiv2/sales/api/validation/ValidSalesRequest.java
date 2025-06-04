@@ -1,19 +1,17 @@
 package apiv2.sales.api.validation;
 
-import apiv2.sales.api.validation.impl.NipValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = NipValidator.class)
-@Target({ ElementType.FIELD })
+@Constraint(validatedBy = InitSalesRequestValidator.class)
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidNIP {
-    String message() default "Invalid NIP number";
-
+public @interface ValidSalesRequest {
+    String message() default "Invalid combination of fields for businessFlow";
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
 }
+

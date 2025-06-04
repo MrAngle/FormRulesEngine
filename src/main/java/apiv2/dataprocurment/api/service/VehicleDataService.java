@@ -1,7 +1,7 @@
 package apiv2.dataprocurment.api.service;
 
 
-import apiv2.dataprocurment.api.dto.request.UpdateVehicleDataRequest;
+import apiv2.dataprocurment.api.dto.request.VehicleDataRequest;
 import apiv2.dataprocurment.api.dto.response.VehicleDataResponse;
 import apiv2.dataprocurment.api.mapper.VehicleDataMapper;
 import apiv2.dataprocurment.domain.VehiclePort;
@@ -21,13 +21,13 @@ public class VehicleDataService {
         return VehicleDataResponse.builder().vin("test").build(); // placeholder
     }
 
-    public void updateVehicleData(String salesId, UpdateVehicleDataRequest request) {
+    public void updateVehicleData(String salesId, VehicleDataRequest request) {
         VehicleData domain = vehicleDataMapper.toDomain(request);
 
         vehicleService.doSomething(domain);
     }
 
-    public void replaceVehicleData(String salesId, UpdateVehicleDataRequest request) {
+    public void replaceVehicleData(String salesId, VehicleDataRequest request) {
         VehicleData domain = vehicleDataMapper.toDomain(request);
 
         vehicleService.doSomething(domain);
