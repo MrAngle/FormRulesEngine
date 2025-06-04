@@ -34,6 +34,7 @@ API:
     Swagger powinien nie byc dostepny na srodowisku produkcyjnym.
     Endpointy powinny być zabezpieczone przed atakami CSRF i XSS.
     Bazuj na najlepszych praktykach definiowania API RESTful.
+    Dodawaj walidacje danych wejściowych i wyjściowych, aby zapewnić bezpieczeństwo i integralność danych.
 
     | Zasób                        | Endpoint                                    |
     | ---------------------------- | ------------------------------------------- |
@@ -41,6 +42,29 @@ API:
     | **OpenAPI JSON**             | `http://localhost:8080/v3/api-docs`         |
     | **OpenAPI JSON (per group)** | `http://localhost:8080/v3/api-docs/{group}` |
 
+    POST /sales
+    RESPONSE: {salesId: adfscf}
+    
+    GET /sales/:salesId/vehicle-data
+    PATCH /sales/:salesId/vehicle-data
+    PUT /sales/:salesId/vehicle-data
+    
+    GET /sales/:salesId/customer-data
+    PATCH /sales/:salesId/customer-data
+    PUT /sales/:salesId/customer-data
+    
+    GET /sales/:salesId/offer
+    PATCH /sales/:salesId/offer
+    PUT /sales/:salesId/offer
+    
+    GET /sales/:salesId/additional-data
+    PATCH /sales/:salesId/additional-data
+    PUT /sales/:salesId/additional-data
+
+
+    // Data musi miec @Schema ze schematem (dd-MM-rrrr) - wymusza OpenAPI (domyslny format rrrr-MM-dd)
+    // Co z archunitami
+    // Mapper Mapstruct
 
 
     Uwzgledniaj wersje w API, np. /api/v1/...
@@ -58,13 +82,21 @@ API:
     │   ├── postal-codes/{code}        # Sprawdzenie kodu pocztowego
     │   └── insurance-types             # Typy ubezpieczeń
     │
-    ├── new-business/                    # 🧾 Proces nowej polisy
-    │   ├── policies/
-    │   │   ├── {policyId}              # Pobierz polisę
+    │   ├── step/
+    │   │   ├── {step-name}/id-policy       
     │   │   └──                         # Stwórz nową polisę
     │   ├── quote                       # Wycena
     │   ├── eligibility                 # Sprawdzenie kwalifikacji
     │   └── questions                   # Pytania underwritingowe
+
+    ├── new-business/                   
+    │   ├── step/
+    │   │   ├── {step-name}             # (wielki) POST/GET/PUT/PATCH (wyciagnac z bazy i zmapowac na obiekty i zwalidowac) - dane na podstawie kroku
+    │   ├── dictionaries/                 # Sprawdzenie kwalifikacji
+        │   ├── countries                   # Lista krajów
+        │   ├── postal-codes/{code}        # Sprawdzenie kodu pocztowego
+        │   └── insurance-types             # Typy ubezpieczeń
+
     │
     ├── renewal/                         # 🔁 Proces odnowienia
     │   ├── policies/

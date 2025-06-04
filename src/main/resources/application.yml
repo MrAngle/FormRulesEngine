@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: InitProject
+
+springdoc:
+  default-produces-media-type: application/json
